@@ -55,9 +55,10 @@ int main()
     string imageLoc;
 
     // getting file location
-    cout << "Please enter the full path for the 3DS file: ";
+    cout << "Please enter the full path to the 3DS sysdata file,\nex. \"I:\\data\\6994afbaa1ed5977a4c2fab49e7bd863\": ";
     cin >> imageLoc;
-    //imageLoc = "I:/data/6994afbaa1ed5977a4c2fab49e7bd863/sysdata/00010017/00000000";
+    //imageLoc = "I:/data/6994afbaa1ed5977a4c2fab49e7bd863";
+    imageLoc += "/sysdata/00010017/00000000";
     // changing file location input for opening
     replace(imageLoc.begin(), imageLoc.end(), '\\', '/');
     image.open(imageLoc, ios::binary);
