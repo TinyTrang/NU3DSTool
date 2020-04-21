@@ -11,13 +11,6 @@
 
 using namespace std;
 
-// starting position of first wifi config (B5E4)
-#define BLK1  46564
-// starting position of second wifi config (C1E4)
-#define BLK2  49636
-// starting position of third wifi config (CDE4)
-#define BLK3  52708
-
 ifstream image;
 
 void getSSID(int pos, short length)
@@ -81,7 +74,7 @@ int main()
         case 1: // NEW 3DS wifi extraction
             //getting ssid for wifi config 1
             // seeking the ssid length (B608)46600
-            image.seekg(46600);
+            image.seekg(0xB608);
             // reading in the length of the ssid
             image >> data;
             // turning length into short
@@ -93,16 +86,16 @@ int main()
             else
             {
                 cout << "\n\n***Wifi config 1 information***\n";
-                // getting ssid (B5E4)
-                getSSID(46568, length);
+                // getting ssid (B5E8)
+                getSSID(0xB5E8, length);
                 // getting password (B60C)
-                getPassword(46604);
+                getPassword(0xB60C);
             }
 
 
             //getting ssid for wifi config 2
             // seeking the ssid length (C208)
-            image.seekg(49672);
+            image.seekg(0xC208);
             // reading in the length of the ssid
             image >> data;
             // turning length into short
@@ -115,15 +108,15 @@ int main()
             {
                 cout << "\n***Wifi config 2 information***\n";
                 // getting ssid (C1E8)
-                getSSID(49640, length);
+                getSSID(0xC1E8, length);
                 // getting password (C20C)
-                getPassword(49676);
+                getPassword(0xC20C);
             }
 
 
             //getting ssid for wifi config 3
             // seeking the ssid length (CE08)
-            image.seekg(52744);
+            image.seekg(0xCE08);
             // reading in the length of the ssid
             image >> data;
             // turning length into short
@@ -136,9 +129,9 @@ int main()
             {
                 cout << "\n***Wifi config 3 information***\n";
                 // getting ssid (CDE8)
-                getSSID(52712, length);
+                getSSID(0xCDE8, length);
                 // getting password (CE0C)
-                getPassword(52748);
+                getPassword(0xCE0C);
             }
             break;
 
