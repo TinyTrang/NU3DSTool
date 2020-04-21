@@ -68,71 +68,36 @@ int main()
         cout << "Is the file for the New 3DS/2DS or the Old 3DS/2DS?\n";
         cout << "1: New 3DS/2DS\n2: Old 3DS/2DS\n3: Unsure\nSelection: ";
         cin >> selection;
-
+        
         switch (selection)
         {
         case 1: // NEW 3DS wifi extraction
-            //getting ssid for wifi config 1
-            // seeking the ssid length (B608)46600
-            image.seekg(0xB608);
-            // reading in the length of the ssid
-            image >> data;
-            // turning length into short
-            length = (short)data;
+            
 
-            // checking to see if there is any wifi info
-            if (length == 0)
-                cout << "\n\nNo data for wifi config 1\n\n";
-            else
+            for (int i = 0; i < 3; i++)
             {
-                cout << "\n\n***Wifi config 1 information***\n";
-                // getting ssid (B5E8)
-                getSSID(0xB5E8, length);
-                // getting password (B60C)
-                getPassword(0xB60C);
+                // seeking the ssid length (B608)46600
+                image.seekg(0xB608 + (i*0xC00));
+                // reading in the length of the ssid
+                image >> data;
+                // turning length into short
+                length = (short)data;
+
+                // checking to see if there is any wifi info
+                if (length == 0)
+                    cout << "\n\nNo data for wifi config " << i + 1 << "\n\n";
+                else
+                {
+                    cout << "\n\n***Wifi config "<< i+1 << " information***\n";
+                    // getting ssid (B5E8)
+                    getSSID(0xB5E8 + (i * 0xC00), length);
+                    // getting password (B60C)
+                    getPassword(0xB60C + (i * 0xC00));
+                }
             }
 
 
-            //getting ssid for wifi config 2
-            // seeking the ssid length (C208)
-            image.seekg(0xC208);
-            // reading in the length of the ssid
-            image >> data;
-            // turning length into short
-            length = (short)data;
-
-            // checking to see if there is any wifi info
-            if (length == 0)
-                cout << "No data for wifi config 2\n\n";
-            else
-            {
-                cout << "\n***Wifi config 2 information***\n";
-                // getting ssid (C1E8)
-                getSSID(0xC1E8, length);
-                // getting password (C20C)
-                getPassword(0xC20C);
-            }
-
-
-            //getting ssid for wifi config 3
-            // seeking the ssid length (CE08)
-            image.seekg(0xCE08);
-            // reading in the length of the ssid
-            image >> data;
-            // turning length into short
-            length = (short)data;
-
-            // checking to see if there is any wifi info
-            if (length == 0)
-                cout << "No data for wifi config 3\n\n";
-            else
-            {
-                cout << "\n***Wifi config 3 information***\n";
-                // getting ssid (CDE8)
-                getSSID(0xCDE8, length);
-                // getting password (CE0C)
-                getPassword(0xCE0C);
-            }
+            
             break;
 
         case 2: // OLD 3DS wifi extraction
