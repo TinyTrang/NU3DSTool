@@ -71,9 +71,10 @@ int main()
         
         switch (selection)
         {
-        case 1: // NEW 3DS wifi extraction
-            
+        case 3: //runs the following two cases
 
+        case 1: // NEW 3DS wifi extraction
+            cout << "\n\nTrying to extract wifi config based on NEW 3DS format:\n";
             for (int i = 0; i < 3; i++)
             {
                 // seeking the ssid length (B608)46600
@@ -85,26 +86,50 @@ int main()
 
                 // checking to see if there is any wifi info
                 if (length == 0)
-                    cout << "\n\nNo data for wifi config " << i + 1 << "\n\n";
+                    cout << "\nNo data for wifi config " << i + 1 << "\n";
                 else
                 {
-                    cout << "\n\n***Wifi config "<< i+1 << " information***\n";
+                    cout << "\n***Wifi config "<< i+1 << " information***\n";
                     // getting ssid (B5E8)
                     getSSID(0xB5E8 + (i * 0xC00), length);
                     // getting password (B60C)
                     getPassword(0xB60C + (i * 0xC00));
                 }
             }
-
-
-            
-            break;
+            if(selection == 1)
+                break;
 
         case 2: // OLD 3DS wifi extraction
-            // insert code to extract
+            cout << "\n\nTrying to extract wifi config based on OLD 3DS format:\n";
+            for (int i = 0; i < 3; i++)
+            {
+                // seeking the ssid length (B748)
+                image.seekg(0xB748 + (i * 0xC00));
+                // reading in the length of the ssid
+                image >> data;
+                // turning length into short
+                length = (short)data;
+
+                // checking to see if there is any wifi info
+                if (length == 0)
+                    cout << "\nNo data for wifi config " << i + 1 << "\n";
+                else
+                {
+                    cout << "\n***Wifi config " << i + 1 << " information***\n";
+                    // getting ssid (B728)
+                    getSSID(0xB728 + (i * 0xC00), length);
+                    // getting password (B74C)
+                    getPassword(0xB74C + (i * 0xC00));
+                }
+            }
+            break;
+               
+        default:
+            cout << "Incorrect or no selection made, please try again.";
+            image.close();
             break;
         }
-
+        
 
 
 
