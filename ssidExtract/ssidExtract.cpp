@@ -55,9 +55,9 @@ int main()
     string imageLoc;
 
     // getting file location
-    //cout << "Please enter the full path for the 3DS file: ";
-    //cin >> imageLoc;
-    imageLoc = "I:/data/6994afbaa1ed5977a4c2fab49e7bd863/sysdata/00010017/00000000";
+    cout << "Please enter the full path for the 3DS file: ";
+    cin >> imageLoc;
+    //imageLoc = "I:/data/6994afbaa1ed5977a4c2fab49e7bd863/sysdata/00010017/00000000";
     // changing file location input for opening
     replace(imageLoc.begin(), imageLoc.end(), '\\', '/');
     image.open(imageLoc, ios::binary);
@@ -66,14 +66,14 @@ int main()
 
         cout << "\n\nFile opened successfully!\n\n";
         cout << "Is the file for the New 3DS/2DS or the Old 3DS/2DS?\n";
-        cout << "1: New 3DS/2DS\n2: Old 3DS/2DS\n3: Unsure\nSelection: ";
+        cout << "1: Old 3DS/2DS\n2: New 3DS/2DS\n3: Unsure\nSelection: ";
         cin >> selection;
         
         switch (selection)
         {
         case 3: //runs the following two cases
 
-        case 1: // NEW 3DS wifi extraction
+        case 2: // NEW 3DS wifi extraction
             cout << "\n\nTrying to extract wifi config based on NEW 3DS format:\n";
             for (int i = 0; i < 3; i++)
             {
@@ -96,10 +96,10 @@ int main()
                     getPassword(0xB60C + (i * 0xC00));
                 }
             }
-            if(selection == 1)
+            if(selection == 2)
                 break;
 
-        case 2: // OLD 3DS wifi extraction
+        case 1: // OLD 3DS wifi extraction
             cout << "\n\nTrying to extract wifi config based on OLD 3DS format:\n";
             for (int i = 0; i < 3; i++)
             {
