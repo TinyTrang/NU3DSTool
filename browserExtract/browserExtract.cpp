@@ -30,7 +30,7 @@ void getBookmarks(int tsOffset) // tsOffset == pos * 8 + 0xE0 on first call
     if (data == 0x01) {
         cout << "\nBookmark offset: " << tsOffset<<endl;
         //Finding Timestamp
-        cout << "\nTimestamp: ";
+        cout << "Timestamp: ";
         for (i = 0; i < 8; i++)
         {
             image.seekg(tsOffset + i);
@@ -56,9 +56,10 @@ void getBookmarks(int tsOffset) // tsOffset == pos * 8 + 0xE0 on first call
         i = 0;
         while (data != NULL && i < 400)
         {
-            image.seekg(urlOffset + i);
+            image.seekg(urlOffset);
             image >> data;
             url += data;
+            urlOffset++;
             i++;
         }
         cout << "\nURL: " << url << endl;
@@ -67,18 +68,17 @@ void getBookmarks(int tsOffset) // tsOffset == pos * 8 + 0xE0 on first call
         // Finding Bookmarks Name
         // start of bookmarks name is 0x610 bytes from start of timestamp
         int nameOffset = tsOffset + 0x610;
-        image.seekg(nameOffset);
-        image >> data;
         i = 0;
         while (i < 200)
         {
-            image.seekg(nameOffset + i);
+            image.seekg(nameOffset);
             image >> data;
-            if (data == ' ')
+            if (data == 0x20)
                 name += ' ';
             if(data!=NULL)
                 name += data;
-            i ++;
+            nameOffset++;
+            i++;
         }
         cout << "Bookmark name: " << name << endl;
 
@@ -125,7 +125,7 @@ void getHistory(int tsOffset) // tsOffset == pos * 8 + 0xE0 + 0x31E30 on first c
 
             cout << "\nHistory offset: " << tsOffset << endl;
             //Finding Timestamp
-            cout << "\nTimestamp: ";
+            cout << "Timestamp: ";
             for (i = 0; i < 8; i++)
             {
                 image.seekg(tsOffset + i);
@@ -141,37 +141,41 @@ void getHistory(int tsOffset) // tsOffset == pos * 8 + 0xE0 + 0x31E30 on first c
             i = 0;
             while (data != NULL && i < 400)
             {
-                image.seekg(urlOffset + i);
+                image.seekg(urlOffset);
                 image >> data;
                 url += data;
+                urlOffset++;
                 i++;
             }
             cout << "\nURL: " << url << endl;
 
 
-            // Finding Histroy Name
-            // start of history name is 0x610 bytes from start of timestamp
+            // Finding Browser Histroy Name
+            // start of browser history name is 0x610 bytes from start of timestamp
             int nameOffset = tsOffset + 0x610;
-            image.seekg(nameOffset);
-            image >> data;
             i = 0;
             while (i < 200)
             {
-                image.seekg(nameOffset + i);
+                image.seekg(nameOffset);
                 image >> data;
                 if (data == 0x20)
                     name += ' ';
-                if (data != NULL)
+                if ((char)data != NULL)
                     name += data;
+                nameOffset++;
                 i++;
             }
             cout << "History name: " << name << endl;
 
-            // next block of bookmark info is 0x810 from start of previous bookmark timestamp
+            // next block of broswer history info is 0x810 from start of previous broswer history timestamp
             int offset = (tsOffset + 0x810);
             getHistory(offset);
         }
+        else
+            cout << "Sorry, no browser history was found" << endl;
     }
+    else
+        cout << "Sorry, no browser history was found"<<endl;
 }
 
 int main()
@@ -218,19 +222,23 @@ int main()
             if (data[pos] == 0x0100000080DF0A00)
             {
                 segment++;
-                cout << "\n\n***Segment " << segment << " of bookmarks***\n";
+                // getting bookmarks info
+                cout << "\n\n***Segment " << segment << " of Bookmarks***\n";
                 //cout << pos << endl;
                 // pos * 8 == offset of start of header
                 // 0xE0 == length from bookmarks header to start of timestamp
                 getBookmarks(pos * 8 + 0xE0);
-                // first history tiemstamp starts 0x31E40 bytes after first bookmarks timestamp
+
+                // getting browser history info
+                cout << "\n\n***Segment " << segment << " of Browser History***\n";
+                // first browser history timestamp starts 0x31E40 bytes after first bookmark's timestamp
                 getHistory(pos * 8 + 0xE0 + 0x31E40);
             }
             pos++;
         }
 
         image.close();
-        cout << "\n\nFile closed\n\n";
+        cout << "\n\nExtraction Complete!\nFile closed\n\n";
     }
     else
         cout << "\n\nFile failed to open, please try again. File path must NOT contain any whitespace." << endl;
