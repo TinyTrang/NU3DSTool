@@ -107,7 +107,7 @@ void getHistory(int tsOffset) // tsOffset == pos * 8 + 0xE0 + 0x31E30 on first c
     string name = "";
     int i = 0;
     short counter;
-    cout << "\ntsOffsett: " << tsOffset << endl;
+    cout << "\nHistory tsOffsett: " << tsOffset << endl;
     // first value of second 8 bytes after timestamp is always 0x01 
     // used to check if there is history
     int checkValOffset = tsOffset + 8;
@@ -216,8 +216,8 @@ int main()
                 // pos * 8 == offset of start of header
                 // 0xE0 == length from bookmarks header to start of timestamp
                 getBookmarks(pos * 8 + 0xE0);
-                // first history tiemstamp starts 0x31E10 bytes after first bookmarks timestamp
-                getHistory(pos * 8 + 0xE0 + 0x31E10);
+                // first history tiemstamp starts 0x31E40 bytes after first bookmarks timestamp
+                getHistory(pos * 8 + 0xE0 + 0x31E40);
             }
             pos++;
         }
