@@ -103,33 +103,34 @@ int main()
     short segment = 0;
 
     // getting file location
-    //cout << "Please enter the full path for the 3DS file: ";
-    //cin >> imageLoc;
-    imageLoc = "C:\\Users\\Trang\\Documents\\Class\\Spring 2020\\Capstone\\6_added_to_internet\\NAND.fat16.bin";
+    cout << "Please enter the full path for the decrypted fat16 3DS file,\nex. \"C:Users\\ConsoleX\\nand.fat16.bin\": ";
+    cin >> imageLoc;
+    //imageLoc = "C:\\Users\\Trang\\Documents\\Class\\Spring 2020\\Capstone\\6_added_to_internet\\NAND.fat16.bin";
     // changing file location input for opening
     replace(imageLoc.begin(), imageLoc.end(), '\\', '/');
+    
     image.open(imageLoc, ios::binary);
     if (image.is_open())
     {
         cout << "\n\nFile opened successfully!\n\n";
-        
+
         image.seekg(0, image.end);
         length = image.tellg();
         image.seekg(0, image.beg);
-        uint64_t * data = new uint64_t[length];
+        uint64_t* data = new uint64_t[length];
         uint64_t temp;
 
         // data gets read in backwards; first hex is now last
         image.read((char*)data, length);
-        
-        
+
+
         // flipping hex values
-        for (int i = 0; i < length; i++) 
+        for (int i = 0; i < length; i++)
         {
             data[i] = htonll(data[i]);
         }
-        
-        
+
+
         // searching for the bookmarks header; 0x0100 0000 80DF 0A00
         while (pos < length)
         {
@@ -145,10 +146,12 @@ int main()
             pos++;
         }
 
-        
+        image.close();
+        cout << "\n\nFile closed\n\n";
     }
-    image.close();
-    cout << "\n\nFile closed\n\n";
+    else
+        cout << "\n\nFile failed to open, please try again. File path must NOT contain any whitespace." << endl;
+    
     
 }
 
