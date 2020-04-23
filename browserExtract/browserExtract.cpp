@@ -43,7 +43,7 @@ void getBookmarks(int tsOffset) // tsOffset == pos * 8 + 0xE0 on first call
         // counter is 12 bytes from start of timestamp
         int counterOffset = tsOffset + 12;
         image.seekg(counterOffset);
-        image >> data;
+        image.get(data);
         counter = short(data);
         cout << counter;
 
@@ -72,9 +72,7 @@ void getBookmarks(int tsOffset) // tsOffset == pos * 8 + 0xE0 on first call
         while (i < 200)
         {
             image.seekg(nameOffset);
-            image >> data;
-            if (data == 0x20)
-                name += ' ';
+            image.get(data);
             if(data!=NULL)
                 name += data;
             nameOffset++;
@@ -157,9 +155,7 @@ void getHistory(int tsOffset) // tsOffset == pos * 8 + 0xE0 + 0x31E30 on first c
             while (i < 200)
             {
                 image.seekg(nameOffset);
-                image >> data;
-                if (data == 0x20)
-                    name += ' ';
+                image.get(data);
                 if ((char)data != NULL)
                     name += data;
                 nameOffset++;
