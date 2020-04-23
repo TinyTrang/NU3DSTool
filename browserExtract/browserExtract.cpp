@@ -14,65 +14,74 @@ using namespace std;
 
 ifstream image;
 
-void getBookmarks(int offset)
+void getBookmarks(int tsOffset) // tsOffset == pos * 8 + 0xE0 on first call
 {
     char data;
     string url = "";
     string name = "";
     int i = 0;
 
-    //Finding Timestamp
-    // 0xE0 == length from bookmarks header to start of timestamp
-    int tsOffset = offset + 0xE0;
-    //cout << (hex) << tsOffset << endl;
-    cout << "Timestamp: ";
-    for (i = 0; i < 8; i++)
-    {
-        image.seekg(tsOffset + i);
+    // last value of first line of bookmark start that is always 0x01 is 
+    // 15 bytes from start of timestamp, used to check is there is a bookmark
+    int checkValOffset = tsOffset + 15;
+    image.seekg(checkValOffset);
+    image >> data;
+    if (data == 0x01) {
+               
+        //Finding Timestamp
+        cout << "\n\nTimestamp: ";
+        for (i = 0; i < 8; i++)
+        {
+            image.seekg(tsOffset + i);
+            image >> data;
+            cout << (int)data;
+        }
+
+        // Finding Bookamrks counter
+        cout << "\nCounter: ";
+        // counter is 13 bytes from start of timestamp
+        int counterOffset = tsOffset + 12;
+        image.seekg(counterOffset);
         image >> data;
         cout << (int) data;
-    }
-
-    // Finding Bookamrks counter
-    cout << "\nCounter: ";
-    // counter is 13 bytes from start of timestamp
-    int counterOffset = tsOffset + 13;
-    image.seekg(counterOffset);
-    image >> data;
-    cout << (int)data;
-    
-    
-    // Finding URL 
-    // start of url is 0x210 bytes from start of timestamp
-    int urlOffset = tsOffset + 0x210;    
-    image.seekg(urlOffset);
-    image >> data;
-    i = 0;
-    while (data != NULL && i < 400)
-    {
-        image.seekg(urlOffset + i);
-        image >> data;        
-        url += data;
-        i++;
-    }
-    cout << "\nURL: " << url;
 
 
-    // Finding Bookmarks Name
-    // start of bookmarks name is 0x610 bytes from start of timestamp
-    int nameOffset = tsOffset + 0x610;
-    image.seekg(nameOffset);
-    image >> data;
-    i = 0;
-    while (i < 200)
-    {
-        image.seekg(nameOffset + i);
+        // Finding URL 
+        // start of url is 0x210 bytes from start of timestamp
+        int urlOffset = tsOffset + 0x210;
+        image.seekg(urlOffset);
         image >> data;
-        name += data;
-        i+=2;
-    }
-    cout << "\nBookmark name: " << name;
+        i = 0;
+        while (data != NULL && i < 400)
+        {
+            image.seekg(urlOffset + i);
+            image >> data;
+            url += data;
+            i++;
+        }
+        cout << "\nURL: " << url;
 
+
+        // Finding Bookmarks Name
+        // start of bookmarks name is 0x610 bytes from start of timestamp
+        int nameOffset = tsOffset + 0x610;
+        image.seekg(nameOffset);
+        image >> data;
+        i = 0;
+        while (i < 200)
+        {
+            image.seekg(nameOffset + i);
+            image >> data;
+            if(data!=NULL)
+                name += data;
+            i ++;
+        }
+        cout << "\nBookmark name: " << name;
+
+        // next block of bookmark info is 0x810 from start of previous bookmark timestamp
+        int offset = (tsOffset + 0x810);
+        getBookmarks(offset);
+    }
 
     /*
     // timestamp: 28 8 byte chunks from bookmarks header
@@ -129,7 +138,8 @@ int main()
                 found = TRUE;
                 //cout << pos << endl;
                 // pos * 8 == offset of start of header
-                getBookmarks(pos * 8);
+                // 0xE0 == length from bookmarks header to start of timestamp
+                getBookmarks(pos * 8 + 0xE0);
             }
             pos++;
         }
