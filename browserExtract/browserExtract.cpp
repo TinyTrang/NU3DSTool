@@ -27,15 +27,15 @@ void getBookmarks(int tsOffset) // tsOffset == pos * 8 + 0xE0 on first call
     int checkValOffset = tsOffset + 15;
     image.seekg(checkValOffset);
     image >> data;
+    cout << "\nBookmark offset: " << tsOffset << endl;
     if (data == 0x01) {
-        cout << "\nBookmark offset: " << tsOffset<<endl;
         //Finding Timestamp
         cout << "Timestamp: ";
         for (i = 0; i < 8; i++)
         {
             image.seekg(tsOffset + i);
             image >> data;
-            cout << (hex) << (int) data;
+            cout << (hex) << (int)data;
         }
 
         // Finding Bookmaks counter
@@ -73,7 +73,7 @@ void getBookmarks(int tsOffset) // tsOffset == pos * 8 + 0xE0 on first call
         {
             image.seekg(nameOffset);
             image.get(data);
-            if(data!=NULL)
+            if (data != NULL)
                 name += data;
             nameOffset++;
             i++;
@@ -84,6 +84,8 @@ void getBookmarks(int tsOffset) // tsOffset == pos * 8 + 0xE0 on first call
         int offset = (tsOffset + 0x810);
         getBookmarks(offset);
     }
+    else
+        cout << "Sorry, no bookmarks were found\n";
 
     /*
     // timestamp: 28 8 byte chunks from bookmarks header
@@ -110,6 +112,7 @@ void getHistory(int tsOffset) // tsOffset == pos * 8 + 0xE0 + 0x31E30 on first c
     int checkValOffset = tsOffset + 8;
     image.seekg(checkValOffset);
     image >> data;
+    cout << "\nHistory offset: " << tsOffset << endl;
     if (data == 0x01) 
     {
         // second value of second 8 bytes after timestamp is 0x01, seems to indicate
@@ -119,9 +122,7 @@ void getHistory(int tsOffset) // tsOffset == pos * 8 + 0xE0 + 0x31E30 on first c
         image.seekg(checkValOffset);
         image >> data;
         if (data == 0x01)
-        {
-
-            cout << "\nHistory offset: " << tsOffset << endl;
+        {      
             //Finding Timestamp
             cout << "Timestamp: ";
             for (i = 0; i < 8; i++)
