@@ -45,7 +45,7 @@ void getBookmarks(int tsOffset) // tsOffset == pos * 8 + 0xE0 on first call
         image.seekg(counterOffset);
         image >> data;
         counter = short(data);
-        cout << (hex) << counter;
+        cout << counter;
 
 
         // Finding URL 
@@ -109,7 +109,7 @@ int main()
     short segment = 0;
 
     // getting file location
-    cout << "Please enter the full path for the decrypted fat16 3DS file,\nex. \"C:Users\\ConsoleX\\nand.fat16.bin\": ";
+    cout << "Please enter the full path for the decrypted fat16 3DS file. Input is not case sensitive, but MUST NOT contain any whitespace.\nex. \"C:Users\\ConsoleX\\nand.fat16.bin\": ";
     cin >> imageLoc;
     //imageLoc = "C:\\Users\\Trang\\Documents\\Class\\Spring 2020\\Capstone\\6_added_to_internet\\NAND.fat16.bin";
     // changing file location input for opening
