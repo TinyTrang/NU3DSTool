@@ -29,7 +29,7 @@ void getBookmarks(int tsOffset) // tsOffset == pos * 8 + 0xE0 on first call
     if (data == 0x01) {
                
         //Finding Timestamp
-        cout << "\n\nTimestamp: ";
+        cout << "\nTimestamp: ";
         for (i = 0; i < 8; i++)
         {
             image.seekg(tsOffset + i);
@@ -76,7 +76,7 @@ void getBookmarks(int tsOffset) // tsOffset == pos * 8 + 0xE0 on first call
                 name += data;
             i ++;
         }
-        cout << "\nBookmark name: " << name;
+        cout << "\nBookmark name: " << name << endl;
 
         // next block of bookmark info is 0x810 from start of previous bookmark timestamp
         int offset = (tsOffset + 0x810);
@@ -100,7 +100,7 @@ int main()
     short selection = 0;
     int pos = 0;
     string imageLoc;
-    
+    short segment = 0;
 
     // getting file location
     //cout << "Please enter the full path for the 3DS file: ";
@@ -129,13 +129,14 @@ int main()
             data[i] = htonll(data[i]);
         }
         
-        bool found = FALSE;
+        
         // searching for the bookmarks header; 0x0100 0000 80DF 0A00
-        while (!found)
+        while (pos < length)
         {
             if (data[pos] == 0x0100000080DF0A00)
             {
-                found = TRUE;
+                segment++;
+                cout << "\n\n***Segment " << segment << " of bookmarks***\n";
                 //cout << pos << endl;
                 // pos * 8 == offset of start of header
                 // 0xE0 == length from bookmarks header to start of timestamp
