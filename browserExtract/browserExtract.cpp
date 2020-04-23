@@ -36,15 +36,21 @@ int main()
         image.seekg(0, image.end);
         length = image.tellg();
         image.seekg(0, image.beg);
-        unsigned char * data = new unsigned char[length];
-        
-        while (!image.eof())
+        uint64_t * data = new uint64_t[length];
+        uint64_t temp;
+
+        image >> temp;
+        cout << (hex) << temp;
+        /*
+         while (!image.eof())
         {
-            image >> data[pos];
-            
-            //cout << data[pos];
+            image >> temp;
+            data[pos] = temp;
+            cout << temp;
             pos++;
         }
+        */
+       
         cout << length;
     }
     image.close();
