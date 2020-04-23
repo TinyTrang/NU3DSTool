@@ -34,7 +34,7 @@ void getBookmarks(int tsOffset) // tsOffset == pos * 8 + 0xE0 on first call
         {
             image.seekg(tsOffset + i);
             image >> data;
-            cout << (int)data;
+            cout << (hex) << (int) data;
         }
 
         // Finding Bookamrks counter
@@ -43,7 +43,7 @@ void getBookmarks(int tsOffset) // tsOffset == pos * 8 + 0xE0 on first call
         int counterOffset = tsOffset + 12;
         image.seekg(counterOffset);
         image >> data;
-        cout << (int) data;
+        cout << (hex) << (int) data;
 
 
         // Finding URL 
@@ -59,7 +59,7 @@ void getBookmarks(int tsOffset) // tsOffset == pos * 8 + 0xE0 on first call
             url += data;
             i++;
         }
-        cout << "\nURL: " << url;
+        cout << "\nURL: " << url << endl;
 
 
         // Finding Bookmarks Name
@@ -67,16 +67,20 @@ void getBookmarks(int tsOffset) // tsOffset == pos * 8 + 0xE0 on first call
         int nameOffset = tsOffset + 0x610;
         image.seekg(nameOffset);
         image >> data;
+        unsigned char temp;
         i = 0;
         while (i < 200)
         {
             image.seekg(nameOffset + i);
-            image >> data;
+            image >> temp;
+            data = temp;
+            if (data == ' ')
+                name += ' ';
             if(data!=NULL)
                 name += data;
             i ++;
         }
-        cout << "\nBookmark name: " << name << endl;
+        cout << "Bookmark name: " << name << endl;
 
         // next block of bookmark info is 0x810 from start of previous bookmark timestamp
         int offset = (tsOffset + 0x810);
@@ -112,7 +116,7 @@ int main()
     image.open(imageLoc, ios::binary);
     if (image.is_open())
     {
-        cout << "\n\nFile opened successfully!\n\n";
+        cout << "\nFile opened successfully!\n\n";
 
         image.seekg(0, image.end);
         length = image.tellg();
