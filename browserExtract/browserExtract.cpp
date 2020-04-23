@@ -20,6 +20,7 @@ void getBookmarks(int tsOffset) // tsOffset == pos * 8 + 0xE0 on first call
     string url = "";
     string name = "";
     int i = 0;
+    short counter;
 
     // last value of first line of bookmark start that is always 0x01 is 
     // 15 bytes from start of timestamp, used to check is there is a bookmark
@@ -43,7 +44,8 @@ void getBookmarks(int tsOffset) // tsOffset == pos * 8 + 0xE0 on first call
         int counterOffset = tsOffset + 12;
         image.seekg(counterOffset);
         image >> data;
-        cout << (hex) << (int) data;
+        counter = short(data);
+        cout << (hex) << counter;
 
 
         // Finding URL 
@@ -134,6 +136,7 @@ int main()
             data[i] = htonll(data[i]);
         }
 
+        cout << "Working on extraction...\n";
 
         // searching for the bookmarks header; 0x0100 0000 80DF 0A00
         while (pos < length)
