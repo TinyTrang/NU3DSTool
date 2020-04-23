@@ -176,7 +176,7 @@ int main()
     short segment = 0;
 
     // getting file location
-    cout << "Please enter the full path for the decrypted fat16 3DS file. Input is not case sensitive, but MUST NOT contain any whitespace.\nex. \"C:Users\\ConsoleX\\nand.fat16.bin\": ";
+    cout << "Please enter the full path for the decrypted fat16 3DS file.\nInput is not case sensitive, but MUST NOT contain any whitespace.\nex. \"C:Users\\ConsoleX\\nand.fat16.bin\": ";
     cin >> imageLoc;
     //imageLoc = "C:\\Users\\Trang\\Documents\\Class\\Spring 2020\\Capstone\\6_added_to_internet\\NAND.fat16.bin";
     // changing file location input for opening
@@ -193,6 +193,8 @@ int main()
         uint64_t* data = new uint64_t[length];
         uint64_t temp;
 
+
+        cout << "Working on extraction...\n";
         // data gets read in backwards; first hex is now last
         image.read((char*)data, length);
 
@@ -202,8 +204,6 @@ int main()
         {
             data[i] = htonll(data[i]);
         }
-
-        cout << "Working on extraction...\n";
 
         // searching for the bookmarks header; 0x0100 0000 80DF 0A00
         while (pos < length)
@@ -216,8 +216,8 @@ int main()
                 // pos * 8 == offset of start of header
                 // 0xE0 == length from bookmarks header to start of timestamp
                 getBookmarks(pos * 8 + 0xE0);
-                // history starts 0x31E30 bytes after first bookmarks timestamp
-                getHistory(pos * 8 + 0xE0 + 0x31E30);
+                // first history tiemstamp starts 0x31E10 bytes after first bookmarks timestamp
+                getHistory(pos * 8 + 0xE0 + 0x31E10);
             }
             pos++;
         }
