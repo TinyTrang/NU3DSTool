@@ -4,11 +4,11 @@
 #include <iostream>
 #include <fstream>
 #include <algorithm>
-#include <string>
-#include <vector>
-#include <array>
+#include <winsock2.h>
+#include <stdio.h>
 //#include <Windows.h>
 //#include <cstdio>
+
 
 using namespace std;
 
@@ -39,19 +39,17 @@ int main()
         uint64_t * data = new uint64_t[length];
         uint64_t temp;
 
-        image >> temp;
-        cout << (hex) << temp;
-        /*
-         while (!image.eof())
+        // data gets read in backwards; first hex is now last
+        image.read((char*)data, length);
+        image.close();
+        
+        for (int i = 0; i < length; i++) 
         {
-            image >> temp;
-            data[pos] = temp;
-            cout << temp;
-            pos++;
+            data[i] = htonll(data[i]);
         }
-        */
-       
-        cout << length;
+        //data[0] = htonll(data[0]);
+        cout <<  (hex) << data[0] << endl;
+        
     }
     image.close();
 }
