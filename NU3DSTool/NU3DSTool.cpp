@@ -230,7 +230,7 @@ int main()
     case 1: //extract browser data
         int length;
         
-        cout << "\n\n*** Browser History Extraction ***\n\n";
+        cout << "\n\n*** Browser Data Extraction ***\n\n";
         // getting file location
         cout << "Please enter the full path for the decrypted fat16 3DS file.\nInput is not case sensitive, but MUST NOT contain any whitespace.\nex. \"C:Users\\ConsoleX\\nand.fat16.bin\": ";
         cin >> imageLoc;
@@ -281,7 +281,7 @@ int main()
             }
 
             image.close();
-            cout << "\n\nExtraction Complete!\nFile closed\n\n";
+            cout << "\n\nBroswer Data Extraction Complete!\nFile closed\n\n";
         }
         else
             cout << "\n\nFile failed to open, please try again. File path must NOT contain any whitespace." << endl;
@@ -306,39 +306,13 @@ int main()
         if (image.is_open()) {
 
             cout << "\n\nFile opened successfully!\n\n";
-            cout << "Is the file for the New 3DS/2DS or the Old 3DS/2DS?\n";
+            cout << "Is the file for the Old 3DS/2DS or the New 3DS/2DS?\n";
             cout << "1: Old 3DS/2DS\n2: New 3DS/2DS\n3: Unsure\nSelection: ";
             cin >> selection;
 
             switch (selection)
             {
             case 3: //runs the following two cases
-
-            case 2: // NEW 3DS wifi extraction
-                cout << "\n\nTrying to extract wifi config based on NEW 3DS format:\n";
-                for (int i = 0; i < 3; i++)
-                {
-                    // seeking the ssid length (B608)46600
-                    image.seekg(0xB608 + (i * 0xC00));
-                    // reading in the length of the ssid
-                    image >> data;
-                    // turning length into short
-                    length = (short)data;
-
-                    // checking to see if there is any wifi info
-                    if (length == 0)
-                        cout << "\nNo data for wifi config " << i + 1 << "\n";
-                    else
-                    {
-                        cout << "\n***Wifi config " << i + 1 << " information***\n";
-                        // getting ssid (B5E8)
-                        getSSID(0xB5E8 + (i * 0xC00), length);
-                        // getting password (B60C)
-                        getPassword(0xB60C + (i * 0xC00));
-                    }
-                }
-                if (selection == 2)
-                    break;
 
             case 1: // OLD 3DS wifi extraction
                 cout << "\n\nTrying to extract wifi config based on OLD 3DS format:\n";
@@ -363,7 +337,39 @@ int main()
                         getPassword(0xB74C + (i * 0xC00));
                     }
                 }
+                if (selection == 1)
+                {
+                    cout << "\n\nWifi Data Extraction Complete!\nFile closed\n\n";
+                    break;
+                }
+                
+
+            case 2: // NEW 3DS wifi extraction
+                cout << "\n\nTrying to extract wifi config based on NEW 3DS format:\n";
+                for (int i = 0; i < 3; i++)
+                {
+                    // seeking the ssid length (B608)46600
+                    image.seekg(0xB608 + (i * 0xC00));
+                    // reading in the length of the ssid
+                    image >> data;
+                    // turning length into short
+                    length = (short)data;
+
+                    // checking to see if there is any wifi info
+                    if (length == 0)
+                        cout << "\nNo data for wifi config " << i + 1 << "\n";
+                    else
+                    {
+                        cout << "\n***Wifi config " << i + 1 << " information***\n";
+                        // getting ssid (B5E8)
+                        getSSID(0xB5E8 + (i * 0xC00), length);
+                        // getting password (B60C)
+                        getPassword(0xB60C + (i * 0xC00));
+                    }
+                }
+                cout << "\n\nWifi Data Extraction Complete!\nFile closed\n\n";
                 break;
+                
 
             default:
                 cout << "Incorrect or no selection made, please try again.";
@@ -374,6 +380,8 @@ int main()
         }
         else
             cout << "\n\nCouldn't open file, please try again.";
+        cout << "\n\nAll Extractions Complete!\n\n";
+        break;
             
     default:
         cout << "\nIncorrect selection made, please try again\nExiting program...\n";
