@@ -28,7 +28,7 @@ void getBookmarks(int tsOffset) // tsOffset == pos * 8 + 0xE0 on first call
     image.seekg(checkValOffset);
     image >> data;
     if (data == 0x01) {
-               
+        cout << "\nBookmark offset: " << tsOffset<<endl;
         //Finding Timestamp
         cout << "\nTimestamp: ";
         for (i = 0; i < 8; i++)
@@ -69,13 +69,11 @@ void getBookmarks(int tsOffset) // tsOffset == pos * 8 + 0xE0 on first call
         int nameOffset = tsOffset + 0x610;
         image.seekg(nameOffset);
         image >> data;
-        unsigned char temp;
         i = 0;
         while (i < 200)
         {
             image.seekg(nameOffset + i);
-            image >> temp;
-            data = temp;
+            image >> data;
             if (data == ' ')
                 name += ' ';
             if(data!=NULL)
@@ -107,63 +105,72 @@ void getHistory(int tsOffset) // tsOffset == pos * 8 + 0xE0 + 0x31E30 on first c
     string name = "";
     int i = 0;
     short counter;
-    cout << "\nHistory tsOffsett: " << tsOffset << endl;
-    // first value of second 8 bytes after timestamp is always 0x01 
+    
+    // first value of second 8 bytes after timestamp is 0x01, seems to indicate 
+    // presence of history name
     // used to check if there is history
     int checkValOffset = tsOffset + 8;
     image.seekg(checkValOffset);
     image >> data;
     if (data == 0x01) 
     {
-
-        //Finding Timestamp
-        cout << "\nTimestamp: ";
-        for (i = 0; i < 8; i++)
-        {
-            image.seekg(tsOffset + i);
-            image >> data;
-            cout << (hex) << (int)data;
-        }
-
-        // Finding URL 
-        // start of url is 0x210 bytes from start of timestamp
-        int urlOffset = tsOffset + 0x210;
-        image.seekg(urlOffset);
+        // second value of second 8 bytes after timestamp is 0x01, seems to indicate
+        // presence of history url
+        // used to check if there is history
+        checkValOffset = tsOffset + 9;
+        image.seekg(checkValOffset);
         image >> data;
-        i = 0;
-        while (data != NULL && i < 400)
+        if (data == 0x01)
         {
-            image.seekg(urlOffset + i);
+
+            cout << "\nHistory offset: " << tsOffset << endl;
+            //Finding Timestamp
+            cout << "\nTimestamp: ";
+            for (i = 0; i < 8; i++)
+            {
+                image.seekg(tsOffset + i);
+                image >> data;
+                cout << (hex) << (int)data;
+            }
+
+            // Finding URL 
+            // start of url is 0x210 bytes from start of timestamp
+            int urlOffset = tsOffset + 0x210;
+            image.seekg(urlOffset);
             image >> data;
-            url += data;
-            i++;
+            i = 0;
+            while (data != NULL && i < 400)
+            {
+                image.seekg(urlOffset + i);
+                image >> data;
+                url += data;
+                i++;
+            }
+            cout << "\nURL: " << url << endl;
+
+
+            // Finding Histroy Name
+            // start of history name is 0x610 bytes from start of timestamp
+            int nameOffset = tsOffset + 0x610;
+            image.seekg(nameOffset);
+            image >> data;
+            i = 0;
+            while (i < 200)
+            {
+                image.seekg(nameOffset + i);
+                image >> data;
+                if (data == 0x20)
+                    name += ' ';
+                if (data != NULL)
+                    name += data;
+                i++;
+            }
+            cout << "History name: " << name << endl;
+
+            // next block of bookmark info is 0x810 from start of previous bookmark timestamp
+            int offset = (tsOffset + 0x810);
+            getHistory(offset);
         }
-        cout << "\nURL: " << url << endl;
-
-
-        // Finding Histroy Name
-        // start of history name is 0x610 bytes from start of timestamp
-        int nameOffset = tsOffset + 0x610;
-        image.seekg(nameOffset);
-        image >> data;
-        unsigned char temp;
-        i = 0;
-        while (i < 200)
-        {
-            image.seekg(nameOffset + i);
-            image >> temp;
-            data = temp;
-            if (data == 0x20)
-                name += ' ';
-            if (data != NULL)
-                name += data;
-            i++;
-        }
-        cout << "History name: " << name << endl;
-
-        // next block of bookmark info is 0x810 from start of previous bookmark timestamp
-        int offset = (tsOffset + 0x810);
-        getHistory(offset);
     }
 }
 
