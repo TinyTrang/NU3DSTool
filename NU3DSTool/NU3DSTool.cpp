@@ -244,7 +244,7 @@ int main()
             image.seekg(0, image.end);
             length = image.tellg();
             image.seekg(0, image.beg);
-            uint64_t* data = new uint64_t[length];
+            uint64_t* data = new uint64_t[length / 8];;
             uint64_t temp;
 
 
@@ -254,13 +254,13 @@ int main()
 
 
             // flipping hex values
-            for (int i = 0; i < length; i++)
+            for (int i = 0; i < length/8; i++)
             {
                 data[i] = htonll(data[i]);
             }
 
             // searching for the bookmarks header; 0x0100 0000 80DF 0A00
-            while (pos < length)
+            while (pos < length/8)
             {
                 if (data[pos] == 0x0100000080DF0A00)
                 {
