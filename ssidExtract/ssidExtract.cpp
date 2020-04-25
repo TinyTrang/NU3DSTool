@@ -58,6 +58,7 @@ int main()
     cout << "Please enter the full path to the 3DS sysdata file,\nex. \"I:\\data\\6994afbaa1ed5977a4c2fab49e7bd863\": ";
     cin >> imageLoc;
     //imageLoc = "I:/data/6994afbaa1ed5977a4c2fab49e7bd863";
+    // adds the remaining file path to wifi config location
     imageLoc += "/sysdata/00010017/00000000";
     // changing file location input for opening
     replace(imageLoc.begin(), imageLoc.end(), '\\', '/');
@@ -66,42 +67,17 @@ int main()
     if (image.is_open()) {
 
         cout << "\n\nFile opened successfully!\n\n";
-        cout << "Is the file for the New 3DS/2DS or the Old 3DS/2DS?\n";
+        cout << "Is the file for the Old 3DS/2DS or the New 3DS/2DS?\n";
         cout << "1: Old 3DS/2DS\n2: New 3DS/2DS\n3: Unsure\nSelection: ";
         cin >> selection;
-        
+
         switch (selection)
         {
         case 3: //runs the following two cases
 
-        case 2: // NEW 3DS wifi extraction
-            cout << "\n\nTrying to extract wifi config based on NEW 3DS format:\n";
-            for (int i = 0; i < 3; i++)
-            {
-                // seeking the ssid length (B608)46600
-                image.seekg(0xB608 + (i*0xC00));
-                // reading in the length of the ssid
-                image >> data;
-                // turning length into short
-                length = (short)data;
-
-                // checking to see if there is any wifi info
-                if (length == 0)
-                    cout << "\nNo data for wifi config " << i + 1 << "\n";
-                else
-                {
-                    cout << "\n***Wifi config "<< i+1 << " information***\n";
-                    // getting ssid (B5E8)
-                    getSSID(0xB5E8 + (i * 0xC00), length);
-                    // getting password (B60C)
-                    getPassword(0xB60C + (i * 0xC00));
-                }
-            }
-            if(selection == 2)
-                break;
-
         case 1: // OLD 3DS wifi extraction
             cout << "\n\nTrying to extract wifi config based on OLD 3DS format:\n";
+            cout << "\nGroup 1 Wifi Configuration\n";
             for (int i = 0; i < 3; i++)
             {
                 // seeking the ssid length (B748)
@@ -123,22 +99,92 @@ int main()
                     getPassword(0xB74C + (i * 0xC00));
                 }
             }
+            cout << "\nGroup 2 Wifi Configuration\n";
+            for (int i = 0; i < 3; i++)
+            {
+                // seeking the ssid length (0x2A748)
+                image.seekg(0x2A748 + (i * 0xC00));
+                // reading in the length of the ssid
+                image >> data;
+                // turning length into short
+                length = (short)data;
+
+                // checking to see if there is any wifi info
+                if (length == 0)
+                    cout << "\nNo data for wifi config " << i + 1 << "\n";
+                else
+                {
+                    cout << "\n***Wifi config " << i + 1 << " information***\n";
+                    // getting ssid (0x2A728)
+                    getSSID(0x2A728 + (i * 0xC00), length);
+                    // getting password (0x2A74c)
+                    getPassword(0x2A74c + (i * 0xC00));
+                }
+            }
+            if (selection == 1)
+            {
+                cout << "\n\nWifi Data Extraction Complete!\nFile closed\n\n";
+                break;
+            }
+
+
+        case 2: // NEW 3DS wifi extraction
+            cout << "\n\nTrying to extract wifi config based on NEW 3DS format:\n";
+            cout << "\nGroup 1 Wifi Configuration\n";
+            for (int i = 0; i < 3; i++)
+            {
+                // seeking the ssid length (B608)
+                image.seekg(0xB608 + (i * 0xC00));
+                // reading in the length of the ssid
+                image >> data;
+                // turning length into short
+                length = (short)data;
+
+                // checking to see if there is any wifi info
+                if (length == 0)
+                    cout << "\nNo data for wifi config " << i + 1 << "\n";
+                else
+                {
+                    cout << "\n***Wifi config " << i + 1 << " information***\n";
+                    // getting ssid (B5E8)
+                    getSSID(0xB5E8 + (i * 0xC00), length);
+                    // getting password (B60C)
+                    getPassword(0xB60C + (i * 0xC00));
+                }
+            }
+
+            cout << "\nGroup 2 Wifi Configuration\n";
+            for (int i = 0; i < 3; i++)
+            {
+                // seeking the ssid length (0x2A608)
+                image.seekg(0x2A608 + (i * 0xC00));
+                // reading in the length of the ssid
+                image >> data;
+                // turning length into short
+                length = (short)data;
+
+                // checking to see if there is any wifi info
+                if (length == 0)
+                    cout << "\nNo data for wifi config " << i + 1 << "\n";
+                else
+                {
+                    cout << "\n***Wifi config " << i + 1 << " information***\n";
+                    // getting ssid (0x2A5E8)
+                    getSSID(0x2A5E8 + (i * 0xC00), length);
+                    // getting password (0x2A60C)
+                    getPassword(0x2A60C + (i * 0xC00));
+                }
+            }
+            cout << "\n\nWifi Data Extraction Complete!\nFile closed\n\n";
             break;
-               
+
+
         default:
             cout << "Incorrect or no selection made, please try again.";
             image.close();
             break;
         }
-        
-
-
-
     }
-    else
-        cout << "\n\nCouldn't open file, please try again.";
-
-    image.close();
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
