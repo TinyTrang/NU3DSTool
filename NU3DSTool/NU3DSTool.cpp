@@ -252,19 +252,19 @@ int main()
             // data gets read in backwards; first hex is now last
             image.read((char*)data, length);
 
-            /*
+            
             // flipping hex values
             for (int i = 0; i < length/8; i++)
             {
                 data[i] = htonll(data[i]);
             }
-            */
+            
 
             // searching for the bookmarks header; 0x0100 0000 80DF 0A00
-            // reverse bookmarks header; 0x00A0 FD08 0000 0010
             while (pos < length/8)
             {
-                if (data[pos] == 0x00A0FD0800000010)
+                //cout << (hex) << data[pos] << endl;
+                if (data[pos] == 0x0100000080DF0A00)
                 {
                     segment++;
                     // getting bookmarks info
